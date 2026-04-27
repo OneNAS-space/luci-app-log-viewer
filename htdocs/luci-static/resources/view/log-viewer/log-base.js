@@ -1075,7 +1075,7 @@ return baseclass.extend({
 				'id': 'logWrapper',
 			}, this.makeLogArea(this.parseLogData(logdata, this.tailValue)));
 
-			this.fastTailValue = this.tailValue;
+			this.fastTailValue = this.tailValue
 
 			this.tailInput = E('input', {
 				'id'       : 'tailInput',
