@@ -92,6 +92,24 @@ jobs:
             --exclude='.github' \
             ./ feed/luci/applications/${PKG_NAME}/
 
+      - name: 🩹 Apply ACL patch for cgi-io (logread-ubox)
+        run: |
+          ACL_FILE="feed/luci/applications/${PKG_NAME}/root/usr/share/rpcd/acl.d/luci-app-log-viewer.json"
+          
+          if [ -f "$ACL_FILE" ]; then
+            if grep -q "logread-ubox" "$ACL_FILE"; then
+              echo "Patch already exists or upstream is updated. Skipping patch."
+            else
+              echo "Applying logread-ubox patch to $ACL_FILE..."
+              jq '.["luci-app-log-viewer"].read.file += {"/usr/libexec/logread-ubox*": ["exec"]}' "$ACL_FILE" > tmp.json
+              mv tmp.json "$ACL_FILE"
+              echo "✅ Patch applied successfully! Reviewing changes:"
+              cat "$ACL_FILE"
+            fi
+          else
+            echo "⚠️ ACL file not found at $ACL_FILE! Skipping patch."
+          fi
+
       - name: 🏗️ Build with OpenWrt SDK
         uses: openwrt/gh-action-sdk@v11
         env:
